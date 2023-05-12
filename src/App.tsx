@@ -1,113 +1,102 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useRef, useState} from 'react';
 import Webcam from 'react-webcam';
-import {CustomMobileNet, load} from '@teachablemachine/image';
 import './App.css';
+import {EditableTitle} from "./component/EditableTitle.tsx";
 
-const URL = 'https://teachablemachine.withgoogle.com/models/xdFR5cc7P/'
-// const URL = '/'
-const modelURL = URL + 'model.json';
-const metadataURL = URL + 'metadata.json';
 
-type BabbelName = "bibbi" | "bobbo" | "dadda" | "diddi" | "doddo" | "babba"
-
-function selectBabelPrediction(predictions: { className: string, probability: number }[]): BabbelName | null {
-    const sortedPredictions = predictions.sort((a, b) => b.probability - a.probability);
-    const mostProbable = sortedPredictions[0];
-
-    console.log(predictions.map(p => p.className))
-    console.log(predictions.map(p => p.probability))
-    // Process predictions and set state here
-    console.log(mostProbable)
-    if (mostProbable.probability < 0.5) {
-        console.log('not sure')
-        return null;
-    }
-
-    console.log(mostProbable.className)
-    const newBabel = mostProbable.className;
-    if (newBabel !== "bibbi" && newBabel !== "bobbo" &&
-        newBabel !== "babba" && newBabel !== "diddi" &&
-        newBabel !== "doddo" && newBabel !== "dadda"
-    ) {
-        return null;
-    }
-
-    return newBabel;
+type SampleImagesProps = {
+    images: string[]
 }
 
-function BabbelImage({name}: { name: BabbelName }) {
-    return <img
-        src={`/${name}.webp`}
-        alt={name}
-        className="w-96"
-    />;
+const SampleImages = ({images}: SampleImagesProps) => {
+    return <div className="h-full overflow-auto pr-6">
+        <div className="grid grid-cols-4 gap-1">
+            {images.map((image, index) => (
+                <img key={index} src={image} alt="webcam" className="w-20 rounded"/>
+            ))}
+        </div>
+        {/*{images.length === 0 && <div className="text-gray-400">No images yet</div>}*/}
+    </div>;
 }
+
+function Header(props: { title: string }) {
+    return <h3 className="text-sm font-medium mb-3">{props.title}</h3>;
+}
+
+
+function Card() {
+    const webcamRef = useRef<Webcam>(null);
+    const [title, setTitle] = useState('Card Title');
+    const [showWebcam, setShowWebcam] = useState(true);
+    const [images, setImages] = useState<string[]>([]);
+
+    function handleClick() {
+        if (!webcamRef.current)
+            return;
+
+        const imageSrc = webcamRef.current.getScreenshot({width: 256, height: 256});
+        if (!imageSrc)
+            return;
+
+        setImages([...images, imageSrc])
+    }
+
+    const top = (
+        <div className="flex items-center justify-between p-3 border-b">
+            <div className="flex flex-row gap-2">
+                <EditableTitle title={title} onUpdate={setTitle}/>
+            </div>
+        </div>)
+
+    const left = (<div className="p-4">
+        <Header title="Webcam"/>
+        {showWebcam && (
+            <Webcam
+                className={"rounded-xl"}
+                ref={webcamRef}
+                videoConstraints={{
+                    facingMode: 'user',
+                    width: 256,
+                    height: 256,
+                }}
+            />
+        )}
+
+        <button className="bg-blue-500 text-white p-2 mt-2" onClick={handleClick
+        }>
+            Take a picture
+        </button>
+    </div>)
+
+    const right = <div className="py-4 pl-6 pr-0 h-full ">
+        <Header title={`${images.length} Sample Images`}/>
+        <SampleImages images={images}/>
+    </div>
+
+    return (
+        <div className="max-w-xl bg-white rounded-lg shadow-md overflow-hidden">
+            {top}
+            <div className="max-w-xl flex flex-row max-h-96">
+                <div className={"w-96 bg-slate-100"}>
+                    {left}
+                </div>
+                <div className={"w-96 overflow-hidden mb-2"}>
+                    {right}
+                </div>
+            </div>
+        </div>
+    );
+}
+
 
 const App: React.FC = () => {
-    const webcamRef = useRef<Webcam>(null);
-
-    const [model, setModel] = useState<CustomMobileNet | null>(null);
-    const [babbel, setBabbel] = useState<BabbelName | null>(null)
-
-    console.log(babbel)
-    const loadModel = async () => {
-        try {
-            // Load the model and save it in state
-            const model = await load(modelURL, metadataURL)
-            setModel(model);
-
-            // Start interval to predict every second
-            console.log('START INTERVAL')
-        } catch (err) {
-            console.log('error loading model', err);
-            return null;
-        }
-        console.log('model loaded')
-    };
-
-    useEffect(() => {
-        loadModel();
-    }, [])
-
-    useEffect(() => {
-        if(!model) return;
-
-        const getBabbelPrediction = async () => {
-            if (model && webcamRef.current) {
-                console.log('1')
-                const video = webcamRef.current.video;
-                if (video) {
-                    console.log('2')
-                    const predictions = await model.predict(video);
-                    return selectBabelPrediction(predictions)
-                }
-            }
-            console.log('3')
-            return null;
-        };
-
-        const intervalId = setInterval(async () => {
-            const babbel = await getBabbelPrediction();
-            console.log('setting babel', babbel)
-            setBabbel(() => babbel)
-        }, 1000);
-
-        return () => clearInterval(intervalId)
-    }, [model]);
 
 
     return (
-        // centered div)
-        <div className="flex min-h-screen flex-col items-center">
-            <div className="w-96">
-                <Webcam
-                    ref={webcamRef}
-                    videoConstraints={{
-                        facingMode: 'user',
-                    }}
-                />
-            </div>
-            <div>{babbel && <BabbelImage name={babbel}/>}</div>
+        <div className="flex flex-col items-center bg-slate-200 gap-2 p-4">
+            <Card/>
+            <Card/>
+            <Card/>
         </div>
     );
 };
