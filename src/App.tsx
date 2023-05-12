@@ -24,12 +24,8 @@ function Header(props: { title: string }) {
 }
 
 
-function Card() {
+function WebcamComponent(props: {onAddImage: (image: string) => void, show: boolean}) {
     const webcamRef = useRef<Webcam>(null);
-    const [title, setTitle] = useState('Card Title');
-    const [showWebcam, setShowWebcam] = useState(true);
-    const [images, setImages] = useState<string[]>([]);
-
     function handleClick() {
         if (!webcamRef.current)
             return;
@@ -38,19 +34,12 @@ function Card() {
         if (!imageSrc)
             return;
 
-        setImages([...images, imageSrc])
+        props.onAddImage(imageSrc)
     }
 
-    const top = (
-        <div className="flex items-center justify-between p-3 border-b">
-            <div className="flex flex-row gap-2">
-                <EditableTitle title={title} onUpdate={setTitle}/>
-            </div>
-        </div>)
-
-    const left = (<div className="p-4">
+    return (<div className="p-4">
         <Header title="Webcam"/>
-        {showWebcam && (
+        {props.show && (
             <Webcam
                 className={"rounded-xl"}
                 ref={webcamRef}
@@ -66,7 +55,26 @@ function Card() {
         }>
             Take a picture
         </button>
-    </div>)
+    </div>);
+}
+
+function Card() {
+    const [title, setTitle] = useState('Card Title');
+    const [showWebcam, setShowWebcam] = useState(true);
+    const [images, setImages] = useState<string[]>([]);
+
+    const handleImageAdded = (image: string) => {
+        setImages([...images, image])
+    }
+
+    const top = (
+        <div className="flex items-center justify-between p-3 border-b">
+            <div className="flex flex-row gap-2">
+                <EditableTitle title={title} onUpdate={setTitle}/>
+            </div>
+        </div>)
+
+    const left = <WebcamComponent onAddImage={handleImageAdded} show={showWebcam} />;
 
     const right = <div className="py-4 pl-6 pr-0 h-full ">
         <Header title={`${images.length} Sample Images`}/>
@@ -94,7 +102,6 @@ const App: React.FC = () => {
 
     return (
         <div className="flex flex-col items-center bg-slate-200 gap-2 p-4">
-            <Card/>
             <Card/>
             <Card/>
         </div>
