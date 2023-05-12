@@ -24,18 +24,34 @@ function Header(props: { title: string }) {
 }
 
 
-function WebcamComponent(props: {onAddImage: (image: string) => void, show: boolean}) {
+function WebcamComponent(props: { onAddImage: (image: string) => void, show: boolean }) {
     const webcamRef = useRef<Webcam>(null);
-    function handleClick() {
+    const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
+
+    const getScreenshot = () => {
         if (!webcamRef.current)
             return;
 
         const imageSrc = webcamRef.current.getScreenshot({width: 256, height: 256});
         if (!imageSrc)
             return;
-
         props.onAddImage(imageSrc)
     }
+
+    const handleClickDown = () => {
+        getScreenshot();
+        const id = setInterval(() => {
+            getScreenshot();
+        }, 100);
+        setIntervalId(id);
+    };
+
+    const handleClickUp = () => {
+        if (intervalId) {
+            clearInterval(intervalId);
+            setIntervalId(null);
+        }
+    };
 
     return (<div className="p-4">
         <Header title="Webcam"/>
@@ -51,9 +67,13 @@ function WebcamComponent(props: {onAddImage: (image: string) => void, show: bool
             />
         )}
 
-        <button className="bg-blue-500 text-white p-2 mt-2" onClick={handleClick
-        }>
-            Take a picture
+        <button className="bg-blue-500 text-white p-2 mt-2"
+                onMouseDown={handleClickDown}
+                onMouseUp={handleClickUp}
+                onTouchStart={handleClickDown}
+                onTouchEnd={handleClickUp}
+        >
+            Hold to record
         </button>
     </div>);
 }
@@ -61,10 +81,13 @@ function WebcamComponent(props: {onAddImage: (image: string) => void, show: bool
 function Card() {
     const [title, setTitle] = useState('Card Title');
     const [showWebcam, setShowWebcam] = useState(true);
-    const [images, setImages] = useState<string[]>([]);
+    const [images, setImages] = useState<string[]>([
+        'data:image/webp;base64,iVBORw0KGgoAAAANSUhEUgAAAOIAAADiCAIAAADccoyAAAACb0lEQVR4nO3SMQ0AIADAMMC/Z5DACUtaBTs294DfrdcBcGdTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEnAA3jUCw4ZBOKoAAAAASUVORK5CYII='
+    ]);
 
     const handleImageAdded = (image: string) => {
-        setImages([...images, image])
+        console.log('handle image add', image)
+        setImages(images => [...images, image])
     }
 
     const top = (
@@ -74,7 +97,7 @@ function Card() {
             </div>
         </div>)
 
-    const left = <WebcamComponent onAddImage={handleImageAdded} show={showWebcam} />;
+    const left = <WebcamComponent onAddImage={handleImageAdded} show={showWebcam}/>;
 
     const right = <div className="py-4 pl-6 pr-0 h-full ">
         <Header title={`${images.length} Sample Images`}/>
@@ -101,7 +124,7 @@ const App: React.FC = () => {
 
 
     return (
-        <div className="flex flex-col items-center bg-slate-200 gap-2 p-4">
+        <div className="flex flex-col items-center gap-2 p-4">
             <Card/>
             <Card/>
         </div>
