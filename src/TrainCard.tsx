@@ -1,10 +1,10 @@
 import * as tf from "@tensorflow/tfjs";
 import React, {useEffect} from "react";
-import {ImageWithRef} from "./types.ts";
+import {ClassWithImages} from "./types.ts";
+import {GraphModel, Sequential} from "@tensorflow/tfjs";
 
 const MOBILE_NET_INPUT_WIDTH = 224;
 const MOBILE_NET_INPUT_HEIGHT = 224;
-const CLASS_NAMES = ['red', 'yellow', 'blue'];
 
 const base64ToTfTensor = (base64_string: string) => {
     const b = window.atob(base64_string);
@@ -20,18 +20,31 @@ function logProgress(epoch: any, logs: any) {
     console.log('Data for epoch ' + epoch, logs);
 }
 
+const predict = (mobilenet: GraphModel, model: Sequential, classNames: string[], ref: React.RefObject<HTMLImageElement>) => {
+    tf.tidy(() => {
+        if (!ref.current) {
+            console.log('No ref');
+            return;
+        }
+        const videoFrameAsTensor = tf.browser.fromPixels(ref.current).div(255);
+        const resizedTensorFrame = tf.image.resizeBilinear(videoFrameAsTensor, [MOBILE_NET_INPUT_HEIGHT,
+            MOBILE_NET_INPUT_WIDTH], true);
 
-export function TrainCard(props: { images: ImageWithRef[] }) {
+        const imageFeatures = mobilenet.predict(resizedTensorFrame.expandDims());
+        const prediction = model.predict(imageFeatures).squeeze();
+        const highestIndex = prediction.argMax().arraySync();
+        const predictionArray = prediction.arraySync();
+        console.log(classNames[highestIndex]);
+        console.log(predictionArray);
+    });
+};
+
+export function TrainCard(props: { classes: ClassWithImages[] }) {
     const redRef = React.useRef<HTMLImageElement>(null);
     const yellowRef = React.useRef<HTMLImageElement>(null);
     const blueRef = React.useRef<HTMLImageElement>(null);
-    const identifyRef = React.useRef<HTMLImageElement>(null);
 
-    const classes = [
-        {name: 'red', refs: [redRef]},
-        {name: 'yellow', refs: [yellowRef]},
-        {name: 'blue', refs: [blueRef]},
-    ]
+    const CLASS_NAMES = props.classes.map(c => c.label);
 
     async function loadMobileNetFeatureModel() {
         const URL =
@@ -47,7 +60,6 @@ export function TrainCard(props: { images: ImageWithRef[] }) {
         tf.tidy(function () {
             const answer = mobilenet.predict(tf.zeros([1, MOBILE_NET_INPUT_HEIGHT, MOBILE_NET_INPUT_WIDTH, 3]));
             console.log(answer);
-            console.log(answer.shape);
         });
         console.log('Done loading mobile net')
 
@@ -57,7 +69,7 @@ export function TrainCard(props: { images: ImageWithRef[] }) {
 
         // model.summary();
 
-// Compile the model with the defined optimizer and specify a loss function to use.
+        // Compile the model with the defined optimizer and specify a loss function to use.
         model.compile({
             // Adam changes the learning rate over time which is useful.
             optimizer: 'adam',
@@ -73,7 +85,7 @@ export function TrainCard(props: { images: ImageWithRef[] }) {
         const trainingDataInputs: any[] = [];
         const trainingDataOutputs: number[] = [];
 
-        const gatherTrainingData = (source: HTMLImageElement, cls: 'red' | 'blue' | 'yellow') => {
+        const gatherTrainingData = (source: HTMLImageElement, cls: string) => {
             const imageFeatures = tf.tidy(function () {
                 const videoFrameAsTensor = tf.browser.fromPixels(source);
                 const resizedTensorFrame = tf.image.resizeBilinear(videoFrameAsTensor, [MOBILE_NET_INPUT_HEIGHT,
@@ -93,11 +105,16 @@ export function TrainCard(props: { images: ImageWithRef[] }) {
             return;
         }
 
-        for (let i = 0; i < 10; i++) {
-            gatherTrainingData(redRef.current, 'red');
-            gatherTrainingData(yellowRef.current, 'yellow');
-            gatherTrainingData(blueRef.current, 'blue');
-        }
+        props.classes.forEach((cls) => {
+            console.log('Gathering data for ' + cls.label)
+            cls.images.forEach((image) => {
+                if(!image.ref.current) {
+                    console.log('No ref');
+                    return;
+                }
+                gatherTrainingData(image.ref.current, cls.label);
+            })
+        })
 
         // const trainAndPredict => () {
         // predict = false;
@@ -116,31 +133,12 @@ export function TrainCard(props: { images: ImageWithRef[] }) {
         inputsAsTensor.dispose()
         console.log(results);
 
-        const ref = redRef;
 
-        const predict = (ref: React.RefObject<HTMLImageElement>) => {
-            tf.tidy(() => {
-                if (!ref.current) {
-                    console.log('No ref');
-                    return;
-                }
-                const videoFrameAsTensor = tf.browser.fromPixels(ref.current).div(255);
-                const resizedTensorFrame = tf.image.resizeBilinear(videoFrameAsTensor, [MOBILE_NET_INPUT_HEIGHT,
-                    MOBILE_NET_INPUT_WIDTH], true);
 
-                const imageFeatures = mobilenet.predict(resizedTensorFrame.expandDims());
-                const prediction = model.predict(imageFeatures).squeeze();
-                const highestIndex = prediction.argMax().arraySync();
-                const predictionArray = prediction.arraySync();
-                console.log(CLASS_NAMES[highestIndex]);
-                console.log(predictionArray);
-            });
-        };
-
-        predict(redRef);
-        predict(yellowRef);
-        predict(blueRef);
-        predict(yellowRef);
+        predict(mobilenet, model, CLASS_NAMES, redRef);
+        predict(mobilenet, model, CLASS_NAMES, yellowRef);
+        predict(mobilenet, model, CLASS_NAMES, blueRef);
+        predict(mobilenet, model, CLASS_NAMES, yellowRef);
     }
 
 
@@ -164,8 +162,5 @@ export function TrainCard(props: { images: ImageWithRef[] }) {
              src="data:image/webp;base64,iVBORw0KGgoAAAANSUhEUgAAAOAAAADgCAIAAACVT/22AAACaUlEQVR4nO3SMQEAIAzAMMC/5+GAlx6Jgh7dMwuyzu8AeDEoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIuFzgDvmi3M4EAAAAASUVORK5CYII="/>
         <img className="w-12" ref={blueRef}
              src="data:image/webp;base64,iVBORw0KGgoAAAANSUhEUgAAAOAAAADgCAIAAACVT/22AAACaklEQVR4nO3SMQEAIAzAsIF/z+CAlx6Jgh5dM2egav8OgBeDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXtAmGzAr9AoqBAAAAAAElFTkSuQmCC"/>
-        <img className="w-12" ref={identifyRef}
-             src="data:image/webp;base64,iVBORw0KGgoAAAANSUhEUgAAAOAAAADgCAIAAACVT/22AAACaUlEQVR4nO3SMQEAIAzAMMC/5+GAlx6Jgh7ds6Dr/A6AF4OSZlDSDEqaQUkzKGkGJc2gpBmUNIOSZlDSDEqaQUkzKGkGJc2gpBmUNIOSZlDSDEqaQUkzKGkGJc2gpBmUNIOSZlDSDEqaQUkzKGkGJc2gpBmUNIOSZlDSDEqaQUkzKGkGJc2gpBmUNIOSZlDSDEqaQUkzKGkGJc2gpBmUNIOSZlDSDEqaQUkzKGkGJc2gpBmUNIOSZlDSDEqaQUkzKGkGJc2gpBmUNIOSZlDSDEqaQUkzKGkGJc2gpBmUNIOSZlDSDEqaQUkzKGkGJc2gpBmUNIOSZlDSDEqaQUkzKGkGJc2gpBmUNIOSZlDSDEqaQUkzKGkGJc2gpBmUNIOSZlDSDEqaQUkzKGkGJc2gpBmUNIOSZlDSDEqaQUkzKGkGJc2gpBmUNIOSZlDSDEqaQUkzKGkGJc2gpBmUNIOSZlDSDEqaQUkzKGkGJc2gpBmUNIOSZlDSDEqaQUkzKGkGJc2gpBmUNIOSZlDSDEqaQUkzKGkGJc2gpBmUNIOSZlDSDEqaQUkzKGkGJc2gpBmUNIOSZlDSDEqaQUkzKGkGJc2gpBmUNIOSZlDSDEqaQUkzKGkGJc2gpBmUNIOSZlDSDEqaQUkzKGkGJc2gpBmUNIOSZlDSDEqaQUkzKGkGJc2gpBmUNIOSZlDSDEqaQUkzKGkGJc2gpBmUNIOSZlDSDEqaQUkzKGkGJc2gpBmUNIOSZlDSDEqaQUkzKGkGJc2gpBmUNIOSZlDSDEqaQUkzKGkGJc2gpBmUNIOSZlDSDEqaQUkzKGkGJe0CY7ECv2UirpoAAAAASUVORK5CYII="/>
-
-        Train Card</div>);
+    </div>);
 }

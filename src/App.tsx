@@ -3,7 +3,7 @@ import Webcam from 'react-webcam';
 import './App.css';
 import {EditableTitle} from "./component/EditableTitle.tsx";
 import {TrainCard} from "./TrainCard.tsx";
-import {ImageWithRef} from "./types.ts";
+import {ClassWithImages, ImageWithRef} from "./types.ts";
 
 type SampleImagesProps = {
     images: ImageWithRef[]
@@ -78,15 +78,10 @@ function WebcamComponent(props: { onAddImage: (image: string) => void, show: boo
     </div>);
 }
 
-function Card() {
-    const [title, setTitle] = useState('Card Title');
+function Card(props: { images: ImageWithRef[], label: string, onAddImage?: (image: string) => void }) {
+    const [title, setTitle] = useState(props.label);
     const [showWebcam, setShowWebcam] = useState(true);
-    const [images, setImages] = useState<ImageWithRef[]>([
-        {
-            src: 'data:image/webp;base64,iVBORw0KGgoAAAANSUhEUgAAAOIAAADiCAIAAADccoyAAAACb0lEQVR4nO3SMQ0AIADAMMC/Z5DACUtaBTs294DfrdcBcGdTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEnAA3jUCw4ZBOKoAAAAASUVORK5CYII='
-            , ref: React.createRef<HTMLImageElement>()
-        }
-    ]);
+    const [images, setImages] = useState<ImageWithRef[]>(props.images);
 
     const handleImageAdded = (image: string) => {
         const newImage = {src: image, ref: React.createRef<HTMLImageElement>()}
@@ -109,7 +104,6 @@ function Card() {
 
     return (
         <>
-            <TrainCard images={images}/>
             <div className="max-w-xl bg-white rounded-lg shadow-md overflow-hidden">
                 {top}
                 <div className="max-w-xl flex flex-row max-h-96">
@@ -127,11 +121,74 @@ function Card() {
 
 
 const App: React.FC = () => {
-
+    const classes: ClassWithImages[] = [
+        {
+            label: 'Red',
+            images: [
+                {
+                    src: 'data:image/webp;base64,iVBORw0KGgoAAAANSUhEUgAAAOIAAADiCAIAAADccoyAAAACb0lEQVR4nO3SMQ0AIADAMMC/Z5DACUtaBTs294DfrdcBcGdTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEnAA3jUCw4ZBOKoAAAAASUVORK5CYII=',
+                    ref: React.createRef<HTMLImageElement>()
+                },
+                {
+                    src: 'data:image/webp;base64,iVBORw0KGgoAAAANSUhEUgAAAOIAAADiCAIAAADccoyAAAACb0lEQVR4nO3SMQ0AIADAMMC/Z5DACUtaBTs294DfrdcBcGdTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEnAA3jUCw4ZBOKoAAAAASUVORK5CYII=',
+                    ref: React.createRef<HTMLImageElement>()
+                },
+                {
+                    src: 'data:image/webp;base64,iVBORw0KGgoAAAANSUhEUgAAAOIAAADiCAIAAADccoyAAAACb0lEQVR4nO3SMQ0AIADAMMC/Z5DACUtaBTs294DfrdcBcGdTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEnAA3jUCw4ZBOKoAAAAASUVORK5CYII=',
+                    ref: React.createRef<HTMLImageElement>()
+                }
+            ]
+        },
+        {
+            label: 'Yellow',
+            images: [
+                {
+                    src: 'data:image/webp;base64,iVBORw0KGgoAAAANSUhEUgAAAOAAAADgCAIAAACVT/22AAACaUlEQVR4nO3SMQEAIAzAMMC/5+GAlx6Jgh7dMwuyzu8AeDEoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIuFzgDvmi3M4EAAAAASUVORK5CYII=',
+                    ref: React.createRef<HTMLImageElement>()
+                },
+                {
+                    src: 'data:image/webp;base64,iVBORw0KGgoAAAANSUhEUgAAAOAAAADgCAIAAACVT/22AAACaUlEQVR4nO3SMQEAIAzAMMC/5+GAlx6Jgh7dMwuyzu8AeDEoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIuFzgDvmi3M4EAAAAASUVORK5CYII=',
+                    ref: React.createRef<HTMLImageElement>()
+                },
+                {
+                    src: 'data:image/webp;base64,iVBORw0KGgoAAAANSUhEUgAAAOAAAADgCAIAAACVT/22AAACaUlEQVR4nO3SMQEAIAzAMMC/5+GAlx6Jgh7dMwuyzu8AeDEoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIuFzgDvmi3M4EAAAAASUVORK5CYII=',
+                    ref: React.createRef<HTMLImageElement>()
+                },
+                {
+                    src: 'data:image/webp;base64,iVBORw0KGgoAAAANSUhEUgAAAOAAAADgCAIAAACVT/22AAACaUlEQVR4nO3SMQEAIAzAMMC/5+GAlx6Jgh7dMwuyzu8AeDEoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIMSppBSTMoaQYlzaCkGZQ0g5JmUNIuFzgDvmi3M4EAAAAASUVORK5CYII=',
+                    ref: React.createRef<HTMLImageElement>()
+                },
+            ]
+        },
+        {
+            label: 'Blue',
+            images: [
+                {
+                    src: 'data:image/webp;base64,iVBORw0KGgoAAAANSUhEUgAAAOAAAADgCAIAAACVT/22AAACaklEQVR4nO3SMQEAIAzAsIF/z+CAlx6Jgh5dM2egav8OgBeDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXtAmGzAr9AoqBAAAAAAElFTkSuQmCC',
+                    ref: React.createRef<HTMLImageElement>()
+                },
+                {
+                    src: 'data:image/webp;base64,iVBORw0KGgoAAAANSUhEUgAAAOAAAADgCAIAAACVT/22AAACaklEQVR4nO3SMQEAIAzAsIF/z+CAlx6Jgh5dM2egav8OgBeDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXtAmGzAr9AoqBAAAAAAElFTkSuQmCC',
+                    ref: React.createRef<HTMLImageElement>()
+                },
+                {
+                    src: 'data:image/webp;base64,iVBORw0KGgoAAAANSUhEUgAAAOAAAADgCAIAAACVT/22AAACaklEQVR4nO3SMQEAIAzAsIF/z+CAlx6Jgh5dM2egav8OgBeDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXtAmGzAr9AoqBAAAAAAElFTkSuQmCC',
+                    ref: React.createRef<HTMLImageElement>()
+                },
+                {
+                    src: 'data:image/webp;base64,iVBORw0KGgoAAAANSUhEUgAAAOAAAADgCAIAAACVT/22AAACaklEQVR4nO3SMQEAIAzAsIF/z+CAlx6Jgh5dM2egav8OgBeDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXtAmGzAr9AoqBAAAAAAElFTkSuQmCC',
+                    ref: React.createRef<HTMLImageElement>()
+                },
+            ]
+        },
+    ]
 
     return (
         <div className="flex flex-col items-center gap-2 p-4">
-            <Card/>
+            <TrainCard classes={classes}/>
+            {classes.map((c, i) => (
+                <Card key={i} label={c.label} images={c.images}/>
+            ))}
         </div>
     );
 };
