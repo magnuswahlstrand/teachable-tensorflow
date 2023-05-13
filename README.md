@@ -6,8 +6,10 @@
 * [x] Add on model complete callback
 * [x] Predict red/yellow/blue from webcam
 * [x] Add predict component
-* [ ] Fix adding images
-* [ ] Ability to retrain model
+* [x] Fix adding images
+* [x] Ability to retrain model
 * [ ] Use train on webcam images
+* [ ] Output progress during training
 * [ ] Add new classes
+* [ ] Make webcam collapsible
 * [ ] Convert to zustand?

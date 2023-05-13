@@ -25,7 +25,7 @@ const PredictionsList = (props: { predictions: Prediction[] }) => {
     </div>;
 }
 
-export function Predictor(props: { model: MobileNetModel | null }) {
+export default function Predictor(props: { model: MobileNetModel | null }) {
     const blueRef = React.useRef<HTMLImageElement>(null);
     const webcamRef = useRef<Webcam>(null);
     const [predictions, setPredictions] = React.useState<Prediction[]>([]);

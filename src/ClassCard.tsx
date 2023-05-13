@@ -18,27 +18,27 @@ const SampleImages = ({images}: SampleImagesProps) => {
     </div>;
 }
 
-export function Card(props: { images: ImageWithRef[], label: string, onAddImage?: (image: string) => void }) {
+export default function ClassCard(props: { images: ImageWithRef[], label: string, onAddImage: (image: string) => void }) {
     const [title, setTitle] = useState(props.label);
     const [showWebcam, setShowWebcam] = useState(true);
-    const [images, setImages] = useState<ImageWithRef[]>(props.images);
+    // const [images, setImages] = useState<ImageWithRef[]>(props.images);
 
-    const handleImageAdded = (image: string) => {
-        const newImage = {src: image, ref: React.createRef<HTMLImageElement>()}
-        console.log("newImage", newImage)
-        setImages(images => [...images, newImage])
-    }
+    // const handleImageAdded = (image: string) => {
+    //     const newImage = {src: image, ref: React.createRef<HTMLImageElement>()}
+    //     console.log("newImage", newImage)
+    //     setImages(images => [...images, newImage])
+    // }
 
     const right = <div className="py-4 pl-6 pr-0 h-full ">
-        <Header title={`${images.length} Sample Images`}/>
-        <SampleImages images={images}/>
+        <Header title={`${props.images.length} Sample Images`}/>
+        <SampleImages images={props.images}/>
     </div>
 
     return (
         <Card2 title={title} onUpdateTitle={setTitle}>
             <div className="max-w-xl flex flex-row max-h-96">
                 <div className={"w-96 bg-slate-100"}>
-                    {<WebcamComponent onAddImage={handleImageAdded} show={showWebcam}/>}
+                    {<WebcamComponent onAddImage={props.onAddImage} show={showWebcam}/>}
                 </div>
                 <div className={"w-96 overflow-hidden mb-2"}>
                     {right}
