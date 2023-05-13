@@ -1,6 +1,5 @@
 import {ImageWithRef} from "./types.ts";
 import React, {useState} from "react";
-import {EditableTitle} from "./component/EditableTitle.tsx";
 import {Header} from "./Header.tsx";
 import Card2 from "./Card2.tsx";
 import {WebcamComponent} from "./WebcamComponent.tsx";
@@ -18,8 +17,11 @@ const SampleImages = ({images}: SampleImagesProps) => {
     </div>;
 }
 
-export default function ClassCard(props: { images: ImageWithRef[], label: string, onAddImage: (image: string) => void }) {
-    const [title, setTitle] = useState(props.label);
+export default function ClassCard(props: {
+    images: ImageWithRef[], label: string,
+    onAddImage: (image: string) => void
+    onTitleUpdated: (newTitle: string) => void
+}) {
     const [showWebcam, setShowWebcam] = useState(true);
     // const [images, setImages] = useState<ImageWithRef[]>(props.images);
 
@@ -35,7 +37,7 @@ export default function ClassCard(props: { images: ImageWithRef[], label: string
     </div>
 
     return (
-        <Card2 title={title} onUpdateTitle={setTitle}>
+        <Card2 title={props.label} onUpdateTitle={props.onTitleUpdated}>
             <div className="max-w-xl flex flex-row max-h-96">
                 <div className={"w-96 bg-slate-100"}>
                     {<WebcamComponent onAddImage={props.onAddImage} show={showWebcam}/>}

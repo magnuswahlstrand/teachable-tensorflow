@@ -10,7 +10,7 @@
 * [x] Ability to retrain model
 * [x] Use train on webcam images
 * [x] Add new classes
-* [ ] Fix class titles
+* [x] Fix class titles
 * [ ] Remove classes and images
 * [ ] Output progress during training
 * [ ] Make webcam collapsible
