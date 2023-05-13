@@ -9,3 +9,5 @@ export type ImageWithRef = {
     src: string,
     ref: React.RefObject<HTMLImageElement>
 }
+
+export type Prediction = { label: string, probability: number };

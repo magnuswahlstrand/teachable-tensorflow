@@ -1,7 +1,6 @@
 import * as tf from "@tensorflow/tfjs";
 import {GraphModel} from "@tensorflow/tfjs";
-import {ClassWithImages} from "./types.ts";
-import React from "react";
+import {ClassWithImages, Prediction} from "./types.ts";
 
 export const MOBILE_NET_INPUT_WIDTH = 224;
 export const MOBILE_NET_INPUT_HEIGHT = 224;
@@ -91,8 +90,9 @@ export class MobileNetModel {
         console.log(results);
     }
 
-    predict(input: HTMLImageElement | HTMLVideoElement): void {
+    predict(input: HTMLImageElement | HTMLVideoElement): Prediction[] {
         // Implement the functionality for making predictions here
+        let predictions: Prediction[] = [];
         tf.tidy(() => {
             // if (!ref.current) {
             //     console.log('No ref');
@@ -108,6 +108,11 @@ export class MobileNetModel {
             const predictionArray = prediction.arraySync();
             console.log(this.classes[highestIndex]);
             console.log(predictionArray);
+            predictions = predictionArray.map((probability: number, index: number) => {
+                return {label: this.classes[index], probability};
+            })
         });
+        return predictions
+
     }
 }
