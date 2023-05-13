@@ -115,31 +115,32 @@ export function TrainCard(props: { images: ImageWithRef[] }) {
         oneHotOutputs.dispose();
         inputsAsTensor.dispose()
         console.log(results);
-        // predictLoop();
-        // }
-        //
-        //
-        // const a = tf.browser.fromPixels(imgRef.current).div(255)
-        // console.log(a)
-        // //
-        // const predictLoop = () => {
-        //     if (predict) {
-        //         tf.tidy(function() {
-        //             let videoFrameAsTensor = tf.browser.fromPixels(VIDEO).div(255);
-        //             let resizedTensorFrame = tf.image.resizeBilinear(videoFrameAsTensor,[MOBILE_NET_INPUT_HEIGHT,
-        //                 MOBILE_NET_INPUT_WIDTH], true);
-        //
-        //             let imageFeatures = mobilenet.predict(resizedTensorFrame.expandDims());
-        //             let prediction = model.predict(imageFeatures).squeeze();
-        //             let highestIndex = prediction.argMax().arraySync();
-        //             let predictionArray = prediction.arraySync();
-        //
-        //             STATUS.innerText = 'Prediction: ' + CLASS_NAMES[highestIndex] + ' with ' + Math.floor(predictionArray[highestIndex] * 100) + '% confidence';
-        //         });
-        //
-        //         window.requestAnimationFrame(predictLoop);
-        //     }
-        // }
+
+        const ref = redRef;
+
+        const predict = (ref: React.RefObject<HTMLImageElement>) => {
+            tf.tidy(() => {
+                if (!ref.current) {
+                    console.log('No ref');
+                    return;
+                }
+                const videoFrameAsTensor = tf.browser.fromPixels(ref.current).div(255);
+                const resizedTensorFrame = tf.image.resizeBilinear(videoFrameAsTensor, [MOBILE_NET_INPUT_HEIGHT,
+                    MOBILE_NET_INPUT_WIDTH], true);
+
+                const imageFeatures = mobilenet.predict(resizedTensorFrame.expandDims());
+                const prediction = model.predict(imageFeatures).squeeze();
+                const highestIndex = prediction.argMax().arraySync();
+                const predictionArray = prediction.arraySync();
+                console.log(CLASS_NAMES[highestIndex]);
+                console.log(predictionArray);
+            });
+        };
+
+        predict(redRef);
+        predict(yellowRef);
+        predict(blueRef);
+        predict(yellowRef);
     }
 
 
