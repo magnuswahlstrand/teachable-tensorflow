@@ -91,15 +91,14 @@ export class MobileNetModel {
         console.log(results);
     }
 
-    predict(ref: React.RefObject<HTMLImageElement>): void {
+    predict(input: HTMLImageElement | HTMLVideoElement): void {
         // Implement the functionality for making predictions here
-        console.log('Making prediction');
         tf.tidy(() => {
-            if (!ref.current) {
-                console.log('No ref');
-                return;
-            }
-            const videoFrameAsTensor = tf.browser.fromPixels(ref.current).div(255);
+            // if (!ref.current) {
+            //     console.log('No ref');
+            //     return;
+            // }
+            const videoFrameAsTensor = tf.browser.fromPixels(input).div(255);
             const resizedTensorFrame = tf.image.resizeBilinear(videoFrameAsTensor, [MOBILE_NET_INPUT_HEIGHT,
                 MOBILE_NET_INPUT_WIDTH], true);
 

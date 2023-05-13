@@ -35,11 +35,12 @@ export function TrainCard(props: { classes: ClassWithImages[], onModelTrained: (
         // const {trainingDataInputs, trainingDataOutputs} = model.gatherTrainingData(props.classes);
         await model.train(props.classes);
 
-
-        model.predict(redRef);
-        model.predict(yellowRef);
-        model.predict(blueRef);
-        model.predict(yellowRef);
+        if(redRef.current === null || yellowRef.current === null || blueRef.current === null)
+            return
+        model.predict(redRef.current);
+        model.predict(yellowRef.current);
+        model.predict(blueRef.current);
+        model.predict(yellowRef.current);
         props.onModelTrained(model);
     }
 
