@@ -2,20 +2,20 @@ import React, {useRef, useState} from 'react';
 import Webcam from 'react-webcam';
 import './App.css';
 import {EditableTitle} from "./component/EditableTitle.tsx";
-
+import {TrainCard} from "./TrainCard.tsx";
+import {ImageWithRef} from "./types.ts";
 
 type SampleImagesProps = {
-    images: string[]
+    images: ImageWithRef[]
 }
 
 const SampleImages = ({images}: SampleImagesProps) => {
     return <div className="h-full overflow-auto pr-6">
         <div className="grid grid-cols-4 gap-1">
             {images.map((image, index) => (
-                <img key={index} src={image} alt="webcam" className="w-20 rounded"/>
+                <img key={index} src={image.src} alt="webcam" className="w-20 rounded" ref={image.ref}/>
             ))}
         </div>
-        {/*{images.length === 0 && <div className="text-gray-400">No images yet</div>}*/}
     </div>;
 }
 
@@ -81,13 +81,16 @@ function WebcamComponent(props: { onAddImage: (image: string) => void, show: boo
 function Card() {
     const [title, setTitle] = useState('Card Title');
     const [showWebcam, setShowWebcam] = useState(true);
-    const [images, setImages] = useState<string[]>([
-        'data:image/webp;base64,iVBORw0KGgoAAAANSUhEUgAAAOIAAADiCAIAAADccoyAAAACb0lEQVR4nO3SMQ0AIADAMMC/Z5DACUtaBTs294DfrdcBcGdTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEnAA3jUCw4ZBOKoAAAAASUVORK5CYII='
+    const [images, setImages] = useState<ImageWithRef[]>([
+        {
+            src: 'data:image/webp;base64,iVBORw0KGgoAAAANSUhEUgAAAOIAAADiCAIAAADccoyAAAACb0lEQVR4nO3SMQ0AIADAMMC/Z5DACUtaBTs294DfrdcBcGdTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEnAA3jUCw4ZBOKoAAAAASUVORK5CYII='
+            , ref: React.createRef<HTMLImageElement>()
+        }
     ]);
 
     const handleImageAdded = (image: string) => {
-        console.log('handle image add', image)
-        setImages(images => [...images, image])
+        const newImage = {src: image, ref: React.createRef<HTMLImageElement>()}
+        setImages(images => [...images, newImage])
     }
 
     const top = (
@@ -105,17 +108,20 @@ function Card() {
     </div>
 
     return (
-        <div className="max-w-xl bg-white rounded-lg shadow-md overflow-hidden">
-            {top}
-            <div className="max-w-xl flex flex-row max-h-96">
-                <div className={"w-96 bg-slate-100"}>
-                    {left}
-                </div>
-                <div className={"w-96 overflow-hidden mb-2"}>
-                    {right}
+        <>
+            <TrainCard images={images}/>
+            <div className="max-w-xl bg-white rounded-lg shadow-md overflow-hidden">
+                {top}
+                <div className="max-w-xl flex flex-row max-h-96">
+                    <div className={"w-96 bg-slate-100"}>
+                        {left}
+                    </div>
+                    <div className={"w-96 overflow-hidden mb-2"}>
+                        {right}
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 
@@ -125,7 +131,6 @@ const App: React.FC = () => {
 
     return (
         <div className="flex flex-col items-center gap-2 p-4">
-            <Card/>
             <Card/>
         </div>
     );
