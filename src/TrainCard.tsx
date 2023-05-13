@@ -39,106 +39,109 @@ const predict = (mobilenet: GraphModel, model: Sequential, classNames: string[],
     });
 };
 
+async function getBaseModels(numClasses: number) {
+    const URL =
+        'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_small_100_224/feature_vector/5/default/1'
+
+    const mobilenet = await tf.loadGraphModel(URL, {fromTFHub: true});
+
+    // model.add(layers.dense({inputShape: [1024], units: 128, activation: 'relu'}));
+    // model.add(layers.dense({units: CLASS_NAMES.length, activation: 'softmax'}));
+
+
+    // Warm up the model by passing zeros through it once.
+    tf.tidy(function () {
+        const answer = mobilenet.predict(tf.zeros([1, MOBILE_NET_INPUT_HEIGHT, MOBILE_NET_INPUT_WIDTH, 3]));
+        console.log(answer);
+    });
+    console.log('Done loading mobile net')
+
+    const model = tf.sequential();
+    model.add(tf.layers.dense({inputShape: [1024], units: 128, activation: 'relu'}));
+    model.add(tf.layers.dense({units: numClasses, activation: 'softmax'}));
+
+    // model.summary();
+
+    // Compile the model with the defined optimizer and specify a loss function to use.
+    model.compile({
+        // Adam changes the learning rate over time which is useful.
+        optimizer: 'adam',
+        // Use the correct loss function. If 2 classes of data, must use binaryCrossentropy.
+        // Else categoricalCrossentropy is used if more than 2 classes.
+        loss: (numClasses === 2) ? 'binaryCrossentropy' : 'categoricalCrossentropy',
+        // As this is a classification problem you can record accuracy in the logs too!
+        metrics: ['accuracy']
+    });
+    return {mobilenet, model};
+}
+
+function gatherTrainingData(mobilenet: GraphModel, classes: ClassWithImages[]) {
+    const trainingDataInputs: any[] = [];
+    const trainingDataOutputs: number[] = [];
+
+    const gatherTrainingData = (source: HTMLImageElement, index: number) => {
+        const imageFeatures = tf.tidy(function () {
+            const videoFrameAsTensor = tf.browser.fromPixels(source);
+            const resizedTensorFrame = tf.image.resizeBilinear(videoFrameAsTensor, [MOBILE_NET_INPUT_HEIGHT,
+                MOBILE_NET_INPUT_WIDTH], true);
+            const normalizedTensorFrame = resizedTensorFrame.div(255);
+            return mobilenet.predict(normalizedTensorFrame.expandDims()).squeeze();
+        });
+        const gatherDataState = index;
+        trainingDataInputs.push(imageFeatures);
+        trainingDataOutputs.push(gatherDataState);
+        console.log(typeof gatherDataState);
+        console.log(typeof imageFeatures);
+    }
+
+    classes.forEach((cls, i) => {
+        console.log('Gathering data for ' + cls.label)
+        cls.images.forEach((image) => {
+            if (!image.ref.current) {
+                console.log('No ref');
+                return;
+            }
+            gatherTrainingData(image.ref.current, i);
+        })
+    })
+    return {trainingDataInputs, trainingDataOutputs};
+}
+
+async function trainModel(trainingDataInputs: any[], trainingDataOutputs: number[], numClasses: number, model: Sequential) {
+    tf.util.shuffleCombo(trainingDataInputs, trainingDataOutputs);
+    const outputsAsTensor = tf.tensor1d(trainingDataOutputs, 'int32');
+    const oneHotOutputs = tf.oneHot(outputsAsTensor, numClasses);
+    const inputsAsTensor = tf.stack(trainingDataInputs);
+
+    const results = await model.fit(inputsAsTensor, oneHotOutputs, {
+        shuffle: true, batchSize: 5, epochs: 10,
+        callbacks: {onEpochEnd: logProgress}
+    });
+
+    outputsAsTensor.dispose();
+    oneHotOutputs.dispose();
+    inputsAsTensor.dispose()
+    console.log(results);
+}
+
 export function TrainCard(props: { classes: ClassWithImages[] }) {
     const redRef = React.useRef<HTMLImageElement>(null);
     const yellowRef = React.useRef<HTMLImageElement>(null);
     const blueRef = React.useRef<HTMLImageElement>(null);
 
-    const CLASS_NAMES = props.classes.map(c => c.label);
+    const classNames = props.classes.map(c => c.label);
 
     async function loadMobileNetFeatureModel() {
-        const URL =
-            'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_small_100_224/feature_vector/5/default/1'
-
-        const mobilenet = await tf.loadGraphModel(URL, {fromTFHub: true});
-
-        // model.add(layers.dense({inputShape: [1024], units: 128, activation: 'relu'}));
-        // model.add(layers.dense({units: CLASS_NAMES.length, activation: 'softmax'}));
+        const numClasses = props.classes.length;
+        const {mobilenet, model} = await getBaseModels(numClasses);
+        const {trainingDataInputs, trainingDataOutputs} = gatherTrainingData(mobilenet, props.classes);
+        await trainModel(trainingDataInputs, trainingDataOutputs, numClasses, model);
 
 
-        // Warm up the model by passing zeros through it once.
-        tf.tidy(function () {
-            const answer = mobilenet.predict(tf.zeros([1, MOBILE_NET_INPUT_HEIGHT, MOBILE_NET_INPUT_WIDTH, 3]));
-            console.log(answer);
-        });
-        console.log('Done loading mobile net')
-
-        const model = tf.sequential();
-        model.add(tf.layers.dense({inputShape: [1024], units: 128, activation: 'relu'}));
-        model.add(tf.layers.dense({units: CLASS_NAMES.length, activation: 'softmax'}));
-
-        // model.summary();
-
-        // Compile the model with the defined optimizer and specify a loss function to use.
-        model.compile({
-            // Adam changes the learning rate over time which is useful.
-            optimizer: 'adam',
-            // Use the correct loss function. If 2 classes of data, must use binaryCrossentropy.
-            // Else categoricalCrossentropy is used if more than 2 classes.
-            loss: (CLASS_NAMES.length === 2) ? 'binaryCrossentropy' : 'categoricalCrossentropy',
-            // As this is a classification problem you can record accuracy in the logs too!
-            metrics: ['accuracy']
-        });
-
-        // const base64 = 'iVBORw0KGgoAAAANSUhEUgAAAOIAAADiCAIAAADccoyAAAACb0lEQVR4nO3SMQ0AIADAMMC/Z5DACUtaBTs294DfrdcBcGdTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEmBTAmxKgE0JsCkBNiXApgTYlACbEnAA3jUCw4ZBOKoAAAAASUVORK5CYII='
-
-        const trainingDataInputs: any[] = [];
-        const trainingDataOutputs: number[] = [];
-
-        const gatherTrainingData = (source: HTMLImageElement, cls: string) => {
-            const imageFeatures = tf.tidy(function () {
-                const videoFrameAsTensor = tf.browser.fromPixels(source);
-                const resizedTensorFrame = tf.image.resizeBilinear(videoFrameAsTensor, [MOBILE_NET_INPUT_HEIGHT,
-                    MOBILE_NET_INPUT_WIDTH], true);
-                const normalizedTensorFrame = resizedTensorFrame.div(255);
-                return mobilenet.predict(normalizedTensorFrame.expandDims()).squeeze();
-            });
-            const gatherDataState = CLASS_NAMES.indexOf(cls);
-            trainingDataInputs.push(imageFeatures);
-            trainingDataOutputs.push(gatherDataState);
-            console.log('Gathered data for ' + cls);
-            console.log(typeof gatherDataState);
-            console.log(typeof imageFeatures);
-        }
-        if (!redRef.current || !yellowRef.current || !blueRef.current) {
-            console.log('No refs');
-            return;
-        }
-
-        props.classes.forEach((cls) => {
-            console.log('Gathering data for ' + cls.label)
-            cls.images.forEach((image) => {
-                if(!image.ref.current) {
-                    console.log('No ref');
-                    return;
-                }
-                gatherTrainingData(image.ref.current, cls.label);
-            })
-        })
-
-        // const trainAndPredict => () {
-        // predict = false;
-        tf.util.shuffleCombo(trainingDataInputs, trainingDataOutputs);
-        const outputsAsTensor = tf.tensor1d(trainingDataOutputs, 'int32');
-        const oneHotOutputs = tf.oneHot(outputsAsTensor, CLASS_NAMES.length);
-        const inputsAsTensor = tf.stack(trainingDataInputs);
-
-        const results = await model.fit(inputsAsTensor, oneHotOutputs, {
-            shuffle: true, batchSize: 5, epochs: 10,
-            callbacks: {onEpochEnd: logProgress}
-        });
-
-        outputsAsTensor.dispose();
-        oneHotOutputs.dispose();
-        inputsAsTensor.dispose()
-        console.log(results);
-
-
-
-        predict(mobilenet, model, CLASS_NAMES, redRef);
-        predict(mobilenet, model, CLASS_NAMES, yellowRef);
-        predict(mobilenet, model, CLASS_NAMES, blueRef);
-        predict(mobilenet, model, CLASS_NAMES, yellowRef);
+        predict(mobilenet, model, classNames, redRef);
+        predict(mobilenet, model, classNames, yellowRef);
+        predict(mobilenet, model, classNames, blueRef);
+        predict(mobilenet, model, classNames, yellowRef);
     }
 
 
@@ -147,13 +150,6 @@ export function TrainCard(props: { classes: ClassWithImages[] }) {
         loadMobileNetFeatureModel();
     }, [])
 
-    // const model = loadGraphModel("https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v2_130_224/classification/2/default/1", {fromTFHub: true}).then((model) => {
-    //     console.log(model)
-    //     debugger;
-    // }).catch((err) => {
-    //     console.log(err)
-    //     debugger;
-    // })
 
     return (<div className="flex flex-row">
         <img className="w-12" ref={redRef}
