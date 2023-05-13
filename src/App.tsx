@@ -4,6 +4,9 @@ import './App.css';
 import {EditableTitle} from "./component/EditableTitle.tsx";
 import {TrainCard} from "./TrainCard.tsx";
 import {ClassWithImages, ImageWithRef} from "./types.ts";
+import {MobileNetModel} from "./classes.ts";
+import {Predictor} from "./Predictor.tsx";
+import Card2 from "./Card2.tsx";
 
 type SampleImagesProps = {
     images: ImageWithRef[]
@@ -95,32 +98,29 @@ function Card(props: { images: ImageWithRef[], label: string, onAddImage?: (imag
             </div>
         </div>)
 
-    const left = <WebcamComponent onAddImage={handleImageAdded} show={showWebcam}/>;
-
     const right = <div className="py-4 pl-6 pr-0 h-full ">
         <Header title={`${images.length} Sample Images`}/>
         <SampleImages images={images}/>
     </div>
 
     return (
-        <>
-            <div className="max-w-xl bg-white rounded-lg shadow-md overflow-hidden">
-                {top}
-                <div className="max-w-xl flex flex-row max-h-96">
-                    <div className={"w-96 bg-slate-100"}>
-                        {left}
-                    </div>
-                    <div className={"w-96 overflow-hidden mb-2"}>
-                        {right}
-                    </div>
+        <Card2 title={title} onUpdateTitle={setTitle}>
+            {top}
+            <div className="max-w-xl flex flex-row max-h-96">
+                <div className={"w-96 bg-slate-100"}>
+                    {<WebcamComponent onAddImage={handleImageAdded} show={showWebcam}/>}
+                </div>
+                <div className={"w-96 overflow-hidden mb-2"}>
+                    {right}
                 </div>
             </div>
-        </>
+        </Card2>
     );
 }
 
 
 const App: React.FC = () => {
+    const [model, setModel] = useState<MobileNetModel | null>(null);
     const classes: ClassWithImages[] = [
         {
             label: 'Red',
@@ -184,11 +184,18 @@ const App: React.FC = () => {
     ]
 
     return (
-        <div className="flex flex-col items-center gap-2 p-4">
-            <TrainCard classes={classes}/>
-            {classes.map((c, i) => (
-                <Card key={i} label={c.label} images={c.images}/>
-            ))}
+        <div className="flex flex-col items-center">
+            <div className="flex flex-row">
+                <div className="flex flex-col items-center gap-2 p-4">
+                    {classes.map((c, i) => (
+                        <Card key={i} label={c.label} images={c.images}/>
+                    ))}
+                </div>
+                <div>
+                    <TrainCard classes={classes} onModelTrained={(m) => setModel(m)}/>
+                    <Predictor model={model}/>
+                </div>
+            </div>
         </div>
     );
 };
