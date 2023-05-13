@@ -1,6 +1,10 @@
 import React, {useState} from "react";
 import {EditIcons} from "./icons/Icons.tsx";
 
+export function Title({title}: { title: string }) {
+    return <h2 className="text-lg font-medium">{title}</h2>;
+}
+
 export function EditableTitle({title, onUpdate}: { title: string, onUpdate: (value: string) => void }) {
     const [isEditingTitle, setIsEditing] = useState(false);
 

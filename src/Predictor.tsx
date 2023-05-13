@@ -3,6 +3,7 @@ import Card2 from "./Card2.tsx";
 import React, {useEffect, useRef, useState} from "react";
 import Webcam from "react-webcam";
 import {Prediction} from "./types.ts";
+import Button from "./Button.tsx";
 
 
 const PredictionsList = (props: { predictions: Prediction[] }) => {
@@ -26,15 +27,14 @@ const PredictionsList = (props: { predictions: Prediction[] }) => {
 }
 
 export default function Predictor(props: { model: MobileNetModel | null }) {
-    const blueRef = React.useRef<HTMLImageElement>(null);
     const webcamRef = useRef<Webcam>(null);
     const [predictions, setPredictions] = React.useState<Prediction[]>([]);
     const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
 
     const handlePredict = () => {
-        if(props.model === null) return;
+        if (props.model === null) return;
         console.log("Predicting...");
-        if (props.model === null || blueRef.current === null || webcamRef.current === null || webcamRef.current.video === null)
+        if (props.model === null || webcamRef.current === null || webcamRef.current.video === null)
             return;
         // props.model.predict(blueRef.current);
         const predictions = props.model.predict(webcamRef.current.video);
@@ -53,26 +53,26 @@ export default function Predictor(props: { model: MobileNetModel | null }) {
         }
     }, [props.model]);
 
-    return <Card2 title={"Predict"} onUpdateTitle={(s) => ({})}>
-        <h3 className="text-sm font-medium mb-3">
-            aa {props.model === null ? null : "YEAH"}
-        </h3>
-        <Webcam
-            className={"rounded-xl"}
-            ref={webcamRef}
-            videoConstraints={{
-                facingMode: 'user',
-                width: 256,
-                height: 256,
-            }}
-        />
-        <img className="w-12" ref={blueRef}
-             src="data:image/webp;base64,iVBORw0KGgoAAAANSUhEUgAAAOAAAADgCAIAAACVT/22AAACaklEQVR4nO3SMQEAIAzAsIF/z+CAlx6Jgh5dM2egav8OgBeDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXNoKQZlDSDkmZQ0gxKmkFJMyhpBiXtAmGzAr9AoqBAAAAAAElFTkSuQmCC"/>
+    return <Card2 title={"Predict"}>
+        <div className="p-4">
+            {props.model === null ? "Model is null" : <>
+                <Webcam
+                    className={"rounded-xl"}
+                    ref={webcamRef}
+                    videoConstraints={{
+                        facingMode: 'user',
+                        width: 256,
+                        height: 256,
+                    }}
+                />
 
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                onClick={handlePredict}>
-            Predict
-        </button>
-        <PredictionsList predictions={predictions}/>
+                <Button title={"Predict"} onClick={handlePredict}/>
+                {/*<button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"*/}
+                {/*        onClick={handlePredict}>*/}
+                {/*    Predict*/}
+                {/*</button>*/}
+                <PredictionsList predictions={predictions}/>
+            </>}
+        </div>
     </Card2>
 }

@@ -1,6 +1,7 @@
 import React, {useRef, useState} from "react";
 import Webcam from "react-webcam";
 import {Header} from "./Header.tsx";
+import Button from "./Button.tsx";
 
 export function WebcamComponent(props: { onAddImage: (image: string) => void, show: boolean }) {
     const webcamRef = useRef<Webcam>(null);
@@ -45,13 +46,11 @@ export function WebcamComponent(props: { onAddImage: (image: string) => void, sh
             />
         )}
 
-        <button className="bg-blue-500 text-white p-2 mt-2"
+        <Button title={"Hold to record"}
                 onMouseDown={handleClickDown}
                 onMouseUp={handleClickUp}
                 onTouchStart={handleClickDown}
                 onTouchEnd={handleClickUp}
-        >
-            Hold to record
-        </button>
+         />
     </div>);
 }

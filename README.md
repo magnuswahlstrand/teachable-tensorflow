@@ -8,8 +8,9 @@
 * [x] Add predict component
 * [x] Fix adding images
 * [x] Ability to retrain model
-* [ ] Use train on webcam images
-* [ ] Output progress during training
+* [x] Use train on webcam images
 * [ ] Add new classes
+* [ ] Remove classes and images
+* [ ] Output progress during training
 * [ ] Make webcam collapsible
 * [ ] Convert to zustand?
