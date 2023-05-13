@@ -1,5 +1,5 @@
 import * as tf from "@tensorflow/tfjs";
-import React, {useEffect} from "react";
+import React from "react";
 import {ClassWithImages} from "./types.ts";
 import {MOBILE_NET_INPUT_HEIGHT, MOBILE_NET_INPUT_WIDTH, MobileNetModel} from "./classes.ts";
 import Card2 from "./Card2.tsx";
@@ -22,11 +22,10 @@ async function downloadMobilenet() {
     return mobilenet;
 }
 
-export function TrainCard(props: { classes: ClassWithImages[], onModelTrained: (model: MobileNetModel) => void }) {
-    // const redRef = React.useRef<HTMLImageElement>(null);
-    // const yellowRef = React.useRef<HTMLImageElement>(null);
-    // const blueRef = React.useRef<HTMLImageElement>(null);
-
+export default function TrainingSection(props: {
+    classes: ClassWithImages[],
+    onModelTrained: (model: MobileNetModel) => void
+}) {
     const classNames = props.classes.map(c => c.label);
     const readyClasses = props.classes.filter(c => c.images.length > 0);
 
@@ -38,38 +37,14 @@ export function TrainCard(props: { classes: ClassWithImages[], onModelTrained: (
         const model = new MobileNetModel(mobilenet, classNames);
         // const {trainingDataInputs, trainingDataOutputs} = model.gatherTrainingData(props.classes);
         await model.train(props.classes);
-
-        // if(redRef.current === null || yellowRef.current === null || blueRef.current === null)
-        //     return
-        // model.predict(redRef.current);
-        // model.predict(yellowRef.current);
-        // model.predict(blueRef.current);
-        // model.predict(yellowRef.current);
         props.onModelTrained(model);
     }
 
-
-// Call the function immediately to start loading.
-//     useEffect(() => {
-//         loadMobileNetFeatureModel();
-//     }, [])
-
-
     return (
         <Card2 title={"Training"}>
-            <div className="p-4">
-                <div>
-                    {props.classes.map((c, i) => {
-                        return <div key={i} className="text-2xl font-bold">
-                            {c.label} {c.images.length}
-                        </div>
-                    })}
-
-                </div>
-                <div>
-                    <Button title={"Retrain"} onClick={() => loadMobileNetFeatureModel()} disabled={readyClasses.length < 2}/>
-                    {(readyClasses.length < 2).toString()}
-                </div>
+            <div className="flex flex-col p-4">
+                <Button title={"Train"} onClick={() => loadMobileNetFeatureModel()}
+                        disabled={readyClasses.length < 2}/>
             </div>
         </Card2>
     );

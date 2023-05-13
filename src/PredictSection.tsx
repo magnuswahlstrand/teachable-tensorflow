@@ -3,21 +3,37 @@ import Card2 from "./Card2.tsx";
 import React, {useEffect, useRef, useState} from "react";
 import Webcam from "react-webcam";
 import {Prediction} from "./types.ts";
-import Button from "./Button.tsx";
+
+const COLORS = [
+    "bg-red-500",
+    "bg-orange-500",
+    "bg-yellow-500",
+    "bg-lime-500",
+    "bg-green-500",
+    "bg-emerald-500",
+]
+
+const TEXT_COLORS = [
+    "text-red-500",
+    "text-orange-500",
+    "text-yellow-500",
+    "text-lime-500",
+    "text-green-500",
+    "text-emerald-500",
+]
 
 
 const PredictionsList = (props: { predictions: Prediction[] }) => {
-    return <div>
+    return <div class="flex flex-col gap-1 pt-3">
         {props.predictions.map((prediction, index) => {
             const percentage = Math.round(prediction.probability * 100).toString() + "%";
             return (
-                <div key={index} className="grid grid-cols-2">
-                    {/*<img src={prediction.image} alt="webcam" class1Name="w-20 rounded"/>*/}
-                    <div>{prediction.label}</div>
-                    <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700">
+                <div key={index} className="grid grid-cols-3 gap-1">
+                    <div className={TEXT_COLORS[index]}>{prediction.label}</div>
+                    <div className="w-full bg-gray-200 dark:bg-gray-700 col-span-2 rounded overflow-hidden">
                         <div
-                            className="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-sm"
-                            style={{width: percentage}}> {percentage}
+                            className={`${COLORS[index]} text-sm h-full text-white text-right px-2`}
+                            style={{width: percentage}}>{percentage}
                         </div>
                     </div>
                 </div>
@@ -26,7 +42,7 @@ const PredictionsList = (props: { predictions: Prediction[] }) => {
     </div>;
 }
 
-export default function Predictor(props: { model: MobileNetModel | null }) {
+export default function PredictSection(props: { model: MobileNetModel | null }) {
     const webcamRef = useRef<Webcam>(null);
     const [predictions, setPredictions] = React.useState<Prediction[]>([]);
     const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
@@ -55,7 +71,7 @@ export default function Predictor(props: { model: MobileNetModel | null }) {
 
     return <Card2 title={"Predict"}>
         <div className="p-4">
-            {props.model === null ? "Model is null" : <>
+            {props.model === null ? "Please train your model" : <>
                 <Webcam
                     className={"rounded-xl"}
                     ref={webcamRef}
@@ -65,12 +81,6 @@ export default function Predictor(props: { model: MobileNetModel | null }) {
                         height: 256,
                     }}
                 />
-
-                <Button title={"Predict"} onClick={handlePredict}/>
-                {/*<button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"*/}
-                {/*        onClick={handlePredict}>*/}
-                {/*    Predict*/}
-                {/*</button>*/}
                 <PredictionsList predictions={predictions}/>
             </>}
         </div>

@@ -21,29 +21,24 @@ export default function ClassCard(props: {
     images: ImageWithRef[], label: string,
     onAddImage: (image: string) => void
     onTitleUpdated: (newTitle: string) => void
+    onRemove?: () => void
+    onResetImages?: () => void
 }) {
     const [showWebcam, setShowWebcam] = useState(true);
-    // const [images, setImages] = useState<ImageWithRef[]>(props.images);
 
-    // const handleImageAdded = (image: string) => {
-    //     const newImage = {src: image, ref: React.createRef<HTMLImageElement>()}
-    //     console.log("newImage", newImage)
-    //     setImages(images => [...images, newImage])
-    // }
-
-    const right = <div className="py-4 pl-6 pr-0 h-full ">
-        <Header title={`${props.images.length} Sample Images`}/>
-        <SampleImages images={props.images}/>
-    </div>
+    const resetButton = <span className="cursor-pointer text-slate-500 italic" onClick={props.onResetImages}>reset</span>
 
     return (
-        <Card2 title={props.label} onUpdateTitle={props.onTitleUpdated}>
+        <Card2 title={props.label} onUpdateTitle={props.onTitleUpdated} onRemove={props.onRemove}>
             <div className="max-w-xl flex flex-row max-h-96">
                 <div className={"w-96 bg-slate-100"}>
                     {<WebcamComponent onAddImage={props.onAddImage} show={showWebcam}/>}
                 </div>
                 <div className={"w-96 overflow-hidden mb-2"}>
-                    {right}
+                    {<div className="py-4 pl-6 pr-0 h-full ">
+                        <Header title={<>{props.images.length} Sample Images ({resetButton})</>}/>
+                        <SampleImages images={props.images}/>
+                    </div>}
                 </div>
             </div>
         </Card2>

@@ -46,11 +46,13 @@ export function WebcamComponent(props: { onAddImage: (image: string) => void, sh
             />
         )}
 
-        <Button title={"Hold to record"}
-                onMouseDown={handleClickDown}
-                onMouseUp={handleClickUp}
-                onTouchStart={handleClickDown}
-                onTouchEnd={handleClickUp}
-         />
+        <div className="flex flex-col pt-3">
+            <Button title={"Hold to record"}
+                    onMouseDown={handleClickDown}
+                    onMouseUp={handleClickUp}
+                    onTouchStart={handleClickDown}
+                    onTouchEnd={handleClickUp}
+            />
+        </div>
     </div>);
 }

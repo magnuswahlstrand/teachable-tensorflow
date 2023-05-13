@@ -11,7 +11,12 @@
 * [x] Use train on webcam images
 * [x] Add new classes
 * [x] Fix class titles
-* [ ] Remove classes and images
+* [x] Fix add classes bug
+* [x] Remove classes and images
+* [x] Fix button design
 * [ ] Output progress during training
+* [ ] Fix prediction designs
 * [ ] Make webcam collapsible
+* [ ] Smooth predictions
+* [ ] Deploy somewhere
 * [ ] Convert to zustand?
