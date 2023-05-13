@@ -36,7 +36,7 @@ export function Predictor(props: { model: MobileNetModel | null }) {
         console.log("Predicting...");
         if (props.model === null || blueRef.current === null || webcamRef.current === null || webcamRef.current.video === null)
             return;
-        props.model.predict(blueRef.current);
+        // props.model.predict(blueRef.current);
         const predictions = props.model.predict(webcamRef.current.video);
         setPredictions(predictions);
         // props.model?.predict(webcamRef.current.);

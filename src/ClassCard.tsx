@@ -25,6 +25,7 @@ export function Card(props: { images: ImageWithRef[], label: string, onAddImage?
 
     const handleImageAdded = (image: string) => {
         const newImage = {src: image, ref: React.createRef<HTMLImageElement>()}
+        console.log("newImage", newImage)
         setImages(images => [...images, newImage])
     }
 

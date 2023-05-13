@@ -3,8 +3,11 @@
 # Going forward
 * [x] Move hardcoded refs to Card
 * [x] Move refs from Card to CardList
-* [ ] Add on model complete callback
-* [ ] Predict red/yellow/blue from webcam
+* [x] Add on model complete callback
+* [x] Predict red/yellow/blue from webcam
+* [x] Add predict component
+* [ ] Fix adding images
+* [ ] Ability to retrain model
 * [ ] Use train on webcam images
-* [ ] Add predict component
 * [ ] Add new classes
+* [ ] Convert to zustand?
