@@ -24,7 +24,7 @@ const TEXT_COLORS = [
 
 
 const PredictionsList = (props: { predictions: Prediction[] }) => {
-    return <div class="flex flex-col gap-1 pt-3">
+    return <div className="flex flex-col gap-1 pt-3">
         {props.predictions.map((prediction, index) => {
             const percentage = Math.round(prediction.probability * 100).toString() + "%";
             return (
@@ -42,14 +42,14 @@ const PredictionsList = (props: { predictions: Prediction[] }) => {
     </div>;
 }
 
+
 export default function PredictSection(props: { model: MobileNetModel | null }) {
     const webcamRef = useRef<Webcam>(null);
     const [predictions, setPredictions] = React.useState<Prediction[]>([]);
     const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
 
     const handlePredict = () => {
-        if (props.model === null) return;
-        console.log("Predicting...");
+        // console.log("Predicting...");
         if (props.model === null || webcamRef.current === null || webcamRef.current.video === null)
             return;
         // props.model.predict(blueRef.current);

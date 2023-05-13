@@ -14,8 +14,9 @@
 * [x] Fix add classes bug
 * [x] Remove classes and images
 * [x] Fix button design
-* [ ] Output progress during training
+* [x] Output progress during training
 * [ ] Fix prediction designs
+* [ ] Make training customizable
 * [ ] Make webcam collapsible
 * [ ] Smooth predictions
 * [ ] Deploy somewhere

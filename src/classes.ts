@@ -4,10 +4,8 @@ import {ClassWithImages, Prediction} from "./types.ts";
 
 export const MOBILE_NET_INPUT_WIDTH = 224;
 export const MOBILE_NET_INPUT_HEIGHT = 224;
-
-function logProgress(epoch: any, logs: any) {
-    console.log('Data for epoch ' + epoch, logs);
-}
+const BATCH_SIZE = 50;
+export const EPOCHS = 50;
 
 export class MobileNetModel {
     model: tf.Sequential;
@@ -71,7 +69,7 @@ export class MobileNetModel {
         return {trainingDataInputs, trainingDataOutputs};
     }
 
-    async train(classes: ClassWithImages[]): Promise<void> {
+    async train(classes: ClassWithImages[], callback: (current: number) => void): Promise<void> {
         const {trainingDataInputs, trainingDataOutputs} = this.gatherTrainingData(classes);
 
         tf.util.shuffleCombo(trainingDataInputs, trainingDataOutputs);
@@ -80,8 +78,8 @@ export class MobileNetModel {
         const inputsAsTensor = tf.stack(trainingDataInputs);
 
         const results = await this.model.fit(inputsAsTensor, oneHotOutputs, {
-            shuffle: true, batchSize: 5, epochs: 10,
-            callbacks: {onEpochEnd: logProgress}
+            shuffle: true, batchSize: BATCH_SIZE, epochs: EPOCHS,
+            callbacks: {onEpochEnd: (epoch, _) => callback(epoch)}
         });
 
         outputsAsTensor.dispose();
@@ -94,20 +92,15 @@ export class MobileNetModel {
         // Implement the functionality for making predictions here
         let predictions: Prediction[] = [];
         tf.tidy(() => {
-            // if (!ref.current) {
-            //     console.log('No ref');
-            //     return;
-            // }
             const videoFrameAsTensor = tf.browser.fromPixels(input).div(255);
             const resizedTensorFrame = tf.image.resizeBilinear(videoFrameAsTensor, [MOBILE_NET_INPUT_HEIGHT,
                 MOBILE_NET_INPUT_WIDTH], true);
 
             const imageFeatures = this.mobilenet.predict(resizedTensorFrame.expandDims());
             const prediction = this.model.predict(imageFeatures).squeeze();
-            const highestIndex = prediction.argMax().arraySync();
             const predictionArray = prediction.arraySync();
-            console.log(this.classes[highestIndex]);
-            console.log(predictionArray);
+            // console.log(this.classes[highestIndex]);
+            // console.log(predictionArray);
             predictions = predictionArray.map((probability: number, index: number) => {
                 return {label: this.classes[index], probability};
             })
