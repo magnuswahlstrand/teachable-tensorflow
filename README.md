@@ -15,9 +15,18 @@
 * [x] Remove classes and images
 * [x] Fix button design
 * [x] Output progress during training
-* [ ] Fix prediction designs
-* [ ] Make training customizable
 * [ ] Make webcam collapsible
-* [ ] Smooth predictions
+* [ ] Fix layout issues
+* [ ] Fix prediction designs
+* [ ] Handle bug at retraining
 * [ ] Deploy somewhere
-* [ ] Convert to zustand?
+Maybe
+* [ ] Convert to zustand? 
+* [ ] Smooth predictions
+* [ ] Make training customizable
+
+
+## Questions
+* How to handle state updates? How to identify the right class to update
+* How to generate labels?
+* How to layout changes?

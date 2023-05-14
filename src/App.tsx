@@ -29,7 +29,9 @@ const App: React.FC = () => {
         // const classes: ClassWithImages[] = [
         {
             label: 'Class 1',
-            images: []
+            images: [
+                {src: "https://picsum.photos/200", ref: React.createRef<HTMLImageElement>()},
+            ]
         }
     ]);
 

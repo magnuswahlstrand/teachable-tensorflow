@@ -3,7 +3,7 @@ import Webcam from "react-webcam";
 import {Header} from "./Header.tsx";
 import Button from "./Button.tsx";
 
-export function WebcamComponent(props: { onAddImage: (image: string) => void, show: boolean }) {
+export function WebcamComponent(props: { onAddImage: (image: string) => void }) {
     const webcamRef = useRef<Webcam>(null);
     const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
 
@@ -32,19 +32,16 @@ export function WebcamComponent(props: { onAddImage: (image: string) => void, sh
         }
     };
 
-    return (<div className="p-4">
-        <Header title="Webcam"/>
-        {props.show && (
-            <Webcam
-                className={"rounded-xl"}
-                ref={webcamRef}
-                videoConstraints={{
-                    facingMode: 'user',
-                    width: 256,
-                    height: 256,
-                }}
-            />
-        )}
+    return (<div>
+        <Webcam
+            className={"rounded-xl"}
+            ref={webcamRef}
+            videoConstraints={{
+                facingMode: 'user',
+                width: 256,
+                height: 256,
+            }}
+        />
 
         <div className="flex flex-col pt-3">
             <Button title={"Hold to record"}
