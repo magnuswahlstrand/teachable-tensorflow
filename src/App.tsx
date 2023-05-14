@@ -26,12 +26,12 @@ function RightArrowWithTitle(props: { title: ReactNode }) {
 const App: React.FC = () => {
     const [model, setModel] = useState<MobileNetModel | null>(null);
     const [classes, setClasses] = useState<ClassWithImages[]>([
-        // const classes: ClassWithImages[] = [
         {
             label: 'Class 1',
             images: [
-                {src: "https://picsum.photos/200", ref: React.createRef<HTMLImageElement>()},
-            ]
+                // {src: "https://picsum.photos/200", ref: React.createRef<HTMLImageElement>()},
+            ],
+            collapsed: true,
         }
     ]);
 
@@ -39,7 +39,8 @@ const App: React.FC = () => {
         console.log("handleAddClass")
         setClasses(classes => [...classes, {
             label: `Class ${classes.length + 1}`,
-            images: []
+            images: [],
+            collapsed: true,
         }])
     }
     // TODO: How to properly delete from list? By index?
@@ -96,6 +97,32 @@ const App: React.FC = () => {
         });
     }
 
+    const handleSetClosed = (label: string, newState: boolean) => {
+        setClasses(classes => {
+            const newClasses = classes.map(c => {
+                // TODO: This will error if labels are identical
+                if (c.label === label) {
+                    return {
+                        ...c,
+                        collapsed: newState,
+                    }
+
+                } else if (!c.collapsed && newState == false) {
+                    // Close all others
+                    console.log("Closing", c.label)
+                    return {
+                        ...c,
+                        collapsed: true,
+                    }
+                }
+                // Close all others
+
+                return c;
+            })
+            return newClasses
+        });
+    }
+
     return (
         <div className="flex flex-col items-center">
             <div className="flex flex-row p-4">
@@ -107,9 +134,11 @@ const App: React.FC = () => {
                                    onTitleUpdated={(newTitle: string) => handleTitleUpdated(c.label, newTitle)}
                                    onResetImages={() => handleResetImages(c.label)}
                                    onRemove={
-                                        // Don't allow remove if only one class
-                                        classes.length > 1 ? () => handleRemoveClass(i): undefined
+                                       // Don't allow remove if only one class
+                                       classes.length > 1 ? () => handleRemoveClass(i) : undefined
                                    }
+                                   collapsed={c.collapsed}
+                                   onSetCollapsed={(collapse: boolean) => handleSetClosed(c.label, collapse)}
                         />
                     ))}
                     <div

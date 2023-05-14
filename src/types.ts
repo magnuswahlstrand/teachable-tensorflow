@@ -3,6 +3,7 @@ import React from "react";
 export type ClassWithImages = {
     label: string,
     images: ImageWithRef[]
+    collapsed: boolean
 }
 
 export type ImageWithRef = {

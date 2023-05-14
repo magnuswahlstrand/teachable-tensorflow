@@ -15,15 +15,18 @@
 * [x] Remove classes and images
 * [x] Fix button design
 * [x] Output progress during training
-* [ ] Make webcam collapsible
+* [x] Make webcam collapsible
 * [ ] Fix layout issues
-* [ ] Fix prediction designs
+    * [ ] Open webcam --> resize
+    * [ ] Scroll on sample images
 * [ ] Handle bug at retraining
 * [ ] Deploy somewhere
+
 Maybe
 * [ ] Convert to zustand? 
 * [ ] Smooth predictions
 * [ ] Make training customizable
+* [ ] Don't download mobilenet every time
 
 
 ## Questions
