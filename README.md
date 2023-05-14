@@ -16,13 +16,14 @@
 * [x] Fix button design
 * [x] Output progress during training
 * [x] Make webcam collapsible
+* [x] Handle bug at retraining
+* [ ] Deploy somewhere
 * [ ] Fix layout issues
     * [ ] Open webcam --> resize
     * [ ] Scroll on sample images
-* [ ] Handle bug at retraining
-* [ ] Deploy somewhere
 
 Maybe
+* [ ] Download model 
 * [ ] Convert to zustand? 
 * [ ] Smooth predictions
 * [ ] Make training customizable

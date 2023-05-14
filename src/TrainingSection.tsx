@@ -14,16 +14,12 @@ async function downloadMobilenet() {
 
     // Warm up the model by passing zeros through it once.
     tf.tidy(function () {
-        const answer = mobilenet.predict(tf.zeros([1, MOBILE_NET_INPUT_HEIGHT, MOBILE_NET_INPUT_WIDTH, 3]));
-        console.log(answer);
+        mobilenet.predict(tf.zeros([1, MOBILE_NET_INPUT_HEIGHT, MOBILE_NET_INPUT_WIDTH, 3]));
+        // console.log(answer);
     });
 
 
     return mobilenet;
-}
-
-function logProgress(epoch: number) {
-    console.log('Data for epoch ' + epoch);
 }
 
 
@@ -34,13 +30,11 @@ export default function TrainingSection(props: {
     const [trainingInProgress, setTrainingInProgress] = React.useState(false);
     const [epochs, setEpochs] = React.useState(0);
     // TODO: How to handle these values?
-    const [maxEpochs, setMaxEpochs] = React.useState(0);
     const classNames = props.classes.map(c => c.label);
     const readyClasses = props.classes.filter(c => c.images.length > 0);
 
     async function loadMobileNetFeatureModel() {
         setEpochs(0);
-        setMaxEpochs(EPOCHS);
         setTrainingInProgress(true);
         console.log("Loading MobileNet feature model...");
         // const numClasses = props.classes.length;
@@ -51,14 +45,13 @@ export default function TrainingSection(props: {
 
         const onProgress = (epoch: number) => {
             setEpochs(epoch);
-            logProgress(epoch);
         }
         await model.train(props.classes, onProgress)
         props.onModelTrained(model);
         setTrainingInProgress(false);
     }
 
-    const title = trainingInProgress ? `Training (${epochs}/${maxEpochs})` : "Train";
+    const title = trainingInProgress ? `Training (${epochs}/${EPOCHS})` : "Train";
 
     return (
         <Card2 title={"Training"}>

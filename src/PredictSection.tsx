@@ -52,20 +52,34 @@ export default function PredictSection(props: { model: MobileNetModel | null }) 
         // console.log("Predicting...");
         if (props.model === null || webcamRef.current === null || webcamRef.current.video === null)
             return;
+
+        // console.log(props.model.numClasses)
         // props.model.predict(blueRef.current);
         const predictions = props.model.predict(webcamRef.current.video);
         setPredictions(predictions);
         // props.model?.predict(webcamRef.current.);
     }
 
-    useEffect(() => {
-        const id = setInterval(handlePredict, 200)
+    const setInterValIdWithLog = (id: NodeJS.Timeout | null) => {
         setIntervalId(id);
+        console.log("setting", id)
+    }
+
+    const clearInterValIdWithLog = (id: NodeJS.Timeout) => {
+        clearInterval(id);
+        console.log("clear interval", id)
+    }
+
+    useEffect(() => {
+        console.log("PredictSection: useEffect");
+        const id = setInterval(handlePredict, 200)
+        // setIntervalId(id);
+        setInterValIdWithLog(id)
         return () => {
-            if (intervalId) {
-                clearInterval(intervalId);
-                setIntervalId(null);
-            }
+            // clearInterval(intervalId);
+            clearInterValIdWithLog(id);
+            // setIntervalId(null);
+            setInterValIdWithLog(null);
         }
     }, [props.model]);
 

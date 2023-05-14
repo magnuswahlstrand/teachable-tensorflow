@@ -57,7 +57,7 @@ export class MobileNetModel {
         }
 
         classes.forEach((cls, i) => {
-            console.log('Gathering data for ' + cls.label)
+            // console.log('Gathering data for ' + cls.label)
             cls.images.forEach((image) => {
                 if (!image.ref.current) {
                     console.log('No ref');
