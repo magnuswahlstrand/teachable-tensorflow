@@ -10,7 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@teachablemachine/image": "^0.8.5",
     "@tensorflow/tfjs": "^4.5.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
