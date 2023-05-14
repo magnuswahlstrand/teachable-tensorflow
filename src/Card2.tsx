@@ -1,4 +1,4 @@
-import React, {ReactNode} from "react";
+import {ReactNode} from "react";
 import {EditableTitle, Title} from "./component/EditableTitle.tsx";
 import {XIcon} from "./component/icons/Icons.tsx";
 

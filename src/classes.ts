@@ -49,6 +49,10 @@ export class MobileNetModel {
                 const resizedTensorFrame = tf.image.resizeBilinear(videoFrameAsTensor, [MOBILE_NET_INPUT_HEIGHT,
                     MOBILE_NET_INPUT_WIDTH], true);
                 const normalizedTensorFrame = resizedTensorFrame.div(255);
+
+                // TODO: Investigate
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 return mobilenet.predict(normalizedTensorFrame.expandDims()).squeeze();
             });
             const gatherDataState = index;
@@ -93,14 +97,20 @@ export class MobileNetModel {
         let predictions: Prediction[] = [];
         tf.tidy(() => {
             const videoFrameAsTensor = tf.browser.fromPixels(input).div(255);
+            // TODO: Investigate
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             const resizedTensorFrame = tf.image.resizeBilinear(videoFrameAsTensor, [MOBILE_NET_INPUT_HEIGHT,
                 MOBILE_NET_INPUT_WIDTH], true);
 
             const imageFeatures = this.mobilenet.predict(resizedTensorFrame.expandDims());
+
+            // TODO: Investigate
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             const prediction = this.model.predict(imageFeatures).squeeze();
             const predictionArray = prediction.arraySync();
-            // console.log(this.classes[highestIndex]);
-            // console.log(predictionArray);
+
             predictions = predictionArray.map((probability: number, index: number) => {
                 return {label: this.classes[index], probability};
             })

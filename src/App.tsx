@@ -9,7 +9,7 @@ import {AddIcon, LongDownArrow, LongRightArrow} from "./component/icons/Icons.ts
 
 
 function PredictArrow() {
-    return <div className="flex flex-row items-center gap-2 justify-center">
+    return <div className="flex flex-row items-center gap-2 justify-center py-2">
         <div className="opacity-0 -mr-6">3. Predict</div>
         <LongDownArrow className="w-24 h-24 text-gray-400"/>
         <div className="-ml-6">3. Predict</div>
@@ -28,9 +28,7 @@ const App: React.FC = () => {
     const [classes, setClasses] = useState<ClassWithImages[]>([
         {
             label: 'Class 1',
-            images: [
-                // {src: "https://picsum.photos/200", ref: React.createRef<HTMLImageElement>()},
-            ],
+            images: [],
             collapsed: true,
         }
     ]);

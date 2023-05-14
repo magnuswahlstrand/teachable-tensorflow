@@ -1,8 +1,8 @@
 import {MobileNetModel} from "./classes.ts";
 import Card2 from "./Card2.tsx";
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef} from "react";
 import Webcam from "react-webcam";
-import {Prediction} from "./types.ts";
+import {Prediction} from "./types.ts"
 
 const COLORS = [
     "bg-red-500",
@@ -46,40 +46,21 @@ const PredictionsList = (props: { predictions: Prediction[] }) => {
 export default function PredictSection(props: { model: MobileNetModel | null }) {
     const webcamRef = useRef<Webcam>(null);
     const [predictions, setPredictions] = React.useState<Prediction[]>([]);
-    const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
 
     const handlePredict = () => {
-        // console.log("Predicting...");
         if (props.model === null || webcamRef.current === null || webcamRef.current.video === null)
             return;
 
-        // console.log(props.model.numClasses)
-        // props.model.predict(blueRef.current);
         const predictions = props.model.predict(webcamRef.current.video);
         setPredictions(predictions);
-        // props.model?.predict(webcamRef.current.);
     }
 
-    const setInterValIdWithLog = (id: NodeJS.Timeout | null) => {
-        setIntervalId(id);
-        console.log("setting", id)
-    }
-
-    const clearInterValIdWithLog = (id: NodeJS.Timeout) => {
-        clearInterval(id);
-        console.log("clear interval", id)
-    }
 
     useEffect(() => {
         console.log("PredictSection: useEffect");
         const id = setInterval(handlePredict, 200)
-        // setIntervalId(id);
-        setInterValIdWithLog(id)
         return () => {
-            // clearInterval(intervalId);
-            clearInterValIdWithLog(id);
-            // setIntervalId(null);
-            setInterValIdWithLog(null);
+            clearInterval(id);
         }
     }, [props.model]);
 

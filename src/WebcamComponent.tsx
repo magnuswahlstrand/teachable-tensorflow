@@ -1,6 +1,5 @@
-import React, {useRef, useState} from "react";
+import {useRef, useState} from "react";
 import Webcam from "react-webcam";
-import {Header} from "./Header.tsx";
 import Button from "./Button.tsx";
 
 export function WebcamComponent(props: { onAddImage: (image: string) => void }) {

@@ -1,5 +1,4 @@
 import {ImageWithRef} from "./types.ts";
-import React, {useState} from "react";
 import {Header} from "./Header.tsx";
 import Card2 from "./Card2.tsx";
 import {WebcamComponent} from "./WebcamComponent.tsx";
