@@ -8,17 +8,17 @@ import ClassCard from "./ClassCard.tsx";
 import {AddIcon, LongDownArrow, LongRightArrow} from "./component/icons/Icons.tsx";
 
 
-function PredictArrow() {
+function PredictArrow(props: {active: boolean }) {
     return <div className="flex flex-row items-center gap-2 justify-center py-2">
         <div className="opacity-0 -mr-6">3. Predict</div>
-        <LongDownArrow className="w-24 h-24 text-gray-400"/>
+        <LongDownArrow className={`w-24 h-24 ${props.active ? "text-blue-400" : "text-gray-400"}`}/>
         <div className="-ml-6">3. Predict</div>
     </div>;
 }
 
-function RightArrowWithTitle(props: { title: ReactNode }) {
+function RightArrowWithTitle(props: { title: ReactNode, active: boolean }) {
     return <div className="flex flex-col items-center px-4">
-        <LongRightArrow className="w-24 h-24 text-gray-400"/>
+        <LongRightArrow className={`w-24 h-24 ${props.active ? "text-blue-400" : "text-gray-400"}`}/>
         <div className="-mt-5">{props.title}</div>
     </div>;
 }
@@ -28,6 +28,11 @@ const App: React.FC = () => {
     const [classes, setClasses] = useState<ClassWithImages[]>([
         {
             label: 'Class 1',
+            images: [],
+            collapsed: true,
+        },
+        {
+            label: 'Class 2',
             images: [],
             collapsed: true,
         }
@@ -124,7 +129,8 @@ const App: React.FC = () => {
     return (
         <div className="flex flex-col items-center">
             <div className="flex flex-row p-4">
-                <RightArrowWithTitle title={<>1. Gather<br/>examples</>}/>
+                <RightArrowWithTitle active={true}
+                    title={<>1. Gather<br/>samples</>}/>
                 <div className="flex flex-col items-center gap-3 items-stretch">
                     {classes.map((c, i) => (
                         <ClassCard key={i} label={c.label} images={c.images}
@@ -149,10 +155,10 @@ const App: React.FC = () => {
                         </div>
                     </div>
                 </div>
-                <RightArrowWithTitle title={<>2. Train<br/>model</>}/>
+                <RightArrowWithTitle title={<>2. Train<br/>model</>} active={classes.filter(c => c.images.length >= 2).length >= 2}/>
                 <div className="flex flex-col items-stretch">
                     <TrainingSection classes={classes} onModelTrained={(m) => setModel(m)}/>
-                    <PredictArrow/>
+                    <PredictArrow active={model !== null}/>
                     <PredictSection model={model}/>
                 </div>
             </div>

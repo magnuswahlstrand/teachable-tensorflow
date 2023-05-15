@@ -12,7 +12,7 @@ export const EditIcons: React.FC<IconProps> = ({className}) => {
 
 export const LongDownArrow: React.FC<IconProps> = ({className}) => {
     return <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
-                className={`w-6 h-6 ${className}`}>
+                className={className}>
         <path fillRule="evenodd"
               d="M12 2.25a.75.75 0 01.75.75v16.19l2.47-2.47a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 111.06-1.06l2.47 2.47V3a.75.75 0 01.75-.75z"
               clipRule="evenodd"/>
@@ -21,7 +21,7 @@ export const LongDownArrow: React.FC<IconProps> = ({className}) => {
 
 export const LongRightArrow: React.FC<IconProps> = ({className}) => {
     return <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
-                className={`w-6 h-6 ${className}`}>
+                className={className}>
         <path fillRule="evenodd"
               d="M16.72 7.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 010 1.06l-3.75 3.75a.75.75 0 11-1.06-1.06l2.47-2.47H3a.75.75 0 010-1.5h16.19l-2.47-2.47a.75.75 0 010-1.06z"
               clipRule="evenodd"/>

@@ -9,7 +9,7 @@ export default function Button(props: {
     onTouchEnd?: () => void,
 }) {
     return <button
-        className={`bg-blue-500 hover:bg-blue-700 text-white ${props.bold ? "font-bold": ""} py-2 px-4 rounded disabled:bg-slate-500`}
+        className={`bg-blue-500 hover:bg-blue-700 text-white ${props.bold ? "font-bold": ""} py-2 px-4 rounded disabled:bg-slate-300`}
         disabled={props.disabled}
         onClick={props.onClick}
         onMouseDown={props.onMouseDown}
